@@ -5,11 +5,14 @@ const { verifyJWT } = require("../middleware/isLoggedIn");
 const {
   signupHandler,
   loginHandler,
+  getUsersHandler,
 } = require("../controllers/authController");
 
 router.post("/signup", signupHandler);
 
 router.post("/login", loginHandler);
+
+router.get("/users", getUsersHandler);
 
 router.get("/admin/data", verifyJWT, async (req, res) => {
   try {

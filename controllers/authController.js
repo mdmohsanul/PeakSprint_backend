@@ -65,4 +65,14 @@ const loginHandler = async (req, res) => {
   }
 };
 
-module.exports = { loginHandler, signupHandler };
+const getUsersHandler = async (req, res) => {
+  try {
+    const users = await userModel.find().select("-password"); // exclude the password schema
+    users.password = undefined;
+    res.status(200).json(users);
+  } catch (error) {
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+module.exports = { loginHandler, signupHandler, getUsersHandler };
