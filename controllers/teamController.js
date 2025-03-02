@@ -17,7 +17,7 @@ const addTeamHandler = async (req, res) => {
 
 const getTeamsHandler = async (req, res) => {
   try {
-    const teams = await Team.find().populate("members");
+    const teams = await Team.find().populate("members").select("-password");
     res.status(200).json(teams);
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
@@ -27,6 +27,7 @@ const getTeamsHandler = async (req, res) => {
 const addMember = async (req, res) => {
   try {
     const teamId = req.params.id;
+    // It accepts an array of member ID
     const memberId = req.body;
 
     const newMember = await Team.findByIdAndUpdate(
