@@ -6,8 +6,17 @@ const mongoose = require("mongoose");
 
 const addTaskHandler = async (req, res) => {
   try {
-    const { name, project, team, owners, tags, timeToComplete, status } =
-      req.body;
+    const {
+      name,
+      project,
+      team,
+      owners,
+      tags,
+      timeToComplete,
+      status,
+      dueDate,
+      priority,
+    } = req.body;
 
     // check if projectId and teamId is a valid ObjectId
     if (
@@ -25,10 +34,30 @@ const addTaskHandler = async (req, res) => {
     if (!checkTeamId || !checkProjectId) {
       return res.status(400).json({ message: "Team or Project not found!" });
     }
-    if (!name || !owners || !tags || !timeToComplete || !status) {
+    if (
+      !name ||
+      !owners ||
+      !tags ||
+      !timeToComplete ||
+      !status ||
+      !dueDate ||
+      !priority
+    ) {
       return res.status(401).json({ message: "Missing required field" });
     }
+    const updateExistingUsers = async () => {
+      try {
+        const result = await Project.updateMany(
+          { priority: { $exists: false } }, // Only update documents where "role" does not exist
+          { $set: { priority: "High" } } // Default value for existing users
+        );
+        console.log("Updated Users:", result);
+      } catch (error) {
+        console.error("Error updating users:", error);
+      }
+    };
 
+    updateExistingUsers();
     const newTask = new Task({
       name,
       project,
@@ -37,6 +66,8 @@ const addTaskHandler = async (req, res) => {
       tags,
       timeToComplete,
       status,
+      dueDate,
+      priority,
     });
 
     await newTask.save();
@@ -46,4 +77,16 @@ const addTaskHandler = async (req, res) => {
   }
 };
 
-module.exports = { addTaskHandler };
+const getTasks = async (res, req) => {
+  try {
+    const tasks = await Task.find().sort({ createdAt: -1 });
+    if (!tasks) {
+      return res.status(401).json({ message: "No Task found" });
+    }
+    return res.status(200).json(tasks);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+module.exports = { addTaskHandler, getTasks };
