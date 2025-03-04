@@ -17,7 +17,7 @@ const addProjectHandler = async (req, res) => {
 };
 const getProjectHandler = async (req, res) => {
   try {
-    const projects = await Project.find();
+    const projects = await Project.find().sort({ createdAt: -1 });
     if (!projects) {
       res.status(400).json({ message: "No project found" });
     }
