@@ -77,7 +77,7 @@ const addTaskHandler = async (req, res) => {
   }
 };
 
-const getTasks = async (res, req) => {
+const getTasks = async (req, res) => {
   try {
     const tasks = await Task.find().sort({ createdAt: -1 });
     if (!tasks) {
@@ -89,4 +89,22 @@ const getTasks = async (res, req) => {
   }
 };
 
-module.exports = { addTaskHandler, getTasks };
+const getTaskByProject = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid ID format" });
+    }
+    const checkProjectId = await Project.findById(id);
+    // check  the team and project  in db
+    if (!checkProjectId) {
+      return res.status(400).json({ message: " Project not found!" });
+    }
+    const tasks = await Task.find({ project: id });
+    return res.status(200).json(tasks);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+module.exports = { addTaskHandler, getTasks, getTaskByProject };
