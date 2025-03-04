@@ -79,7 +79,12 @@ const addTaskHandler = async (req, res) => {
 
 const getTasks = async (req, res) => {
   try {
-    const tasks = await Task.find().sort({ createdAt: -1 });
+    const tasks = await Task.find()
+      .populate("owners")
+      .populate("team")
+      .populate("project")
+      .populate({ path: "team", populate: "members" })
+      .sort({ createdAt: -1 });
     if (!tasks) {
       return res.status(401).json({ message: "No Task found" });
     }

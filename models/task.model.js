@@ -1,20 +1,21 @@
 const mongoose = require("mongoose");
+const { Schema } = mongoose;
 
 const taskSchema = new mongoose.Schema({
   name: { type: String, required: true },
   project: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "Project",
     required: true,
   }, // refers to project model
   team: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "Team", // refers to Team model
     required: true,
   },
   owners: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User", // refers to User model
       required: true,
     },
