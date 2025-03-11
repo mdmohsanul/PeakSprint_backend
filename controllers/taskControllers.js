@@ -105,7 +105,12 @@ const getTaskByProject = async (req, res) => {
     if (!checkProjectId) {
       return res.status(400).json({ message: " Project not found!" });
     }
-    const tasks = await Task.find({ project: id });
+    const tasks = await Task.find({ project: id })
+      .populate("owners")
+      .populate("team")
+      .populate("project")
+      .populate({ path: "team", populate: "members" })
+      .sort({ createdAt: -1 });
     return res.status(200).json(tasks);
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
