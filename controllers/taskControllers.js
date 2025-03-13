@@ -45,19 +45,7 @@ const addTaskHandler = async (req, res) => {
     ) {
       return res.status(401).json({ message: "Missing required field" });
     }
-    const updateExistingUsers = async () => {
-      try {
-        const result = await Project.updateMany(
-          { priority: { $exists: false } }, // Only update documents where "role" does not exist
-          { $set: { priority: "High" } } // Default value for existing users
-        );
-        console.log("Updated Users:", result);
-      } catch (error) {
-        console.error("Error updating users:", error);
-      }
-    };
-
-    updateExistingUsers();
+ 
     const newTask = new Task({
       name,
       project,
