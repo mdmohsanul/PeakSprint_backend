@@ -45,7 +45,7 @@ const addTaskHandler = async (req, res) => {
     ) {
       return res.status(401).json({ message: "Missing required field" });
     }
- 
+
     const newTask = new Task({
       name,
       project,
@@ -68,10 +68,13 @@ const addTaskHandler = async (req, res) => {
 const getTasks = async (req, res) => {
   try {
     const tasks = await Task.find()
-      .populate("owners")
+      .populate({ path: "owners", select: "-password" })
       .populate("team")
       .populate("project")
-      .populate({ path: "team", populate: "members" })
+      .populate({
+        path: "team",
+        populate: { path: "members", select: "-password" },
+      })
       .sort({ createdAt: -1 });
     if (!tasks) {
       return res.status(401).json({ message: "No Task found" });
@@ -94,10 +97,39 @@ const getTaskByProject = async (req, res) => {
       return res.status(400).json({ message: " Project not found!" });
     }
     const tasks = await Task.find({ project: id })
-      .populate("owners")
+      .populate({ path: "owners", select: "-password" })
       .populate("team")
       .populate("project")
-      .populate({ path: "team", populate: "members" })
+      .populate({
+        path: "team",
+        populate: { path: "members", select: "-password" },
+      })
+      .sort({ createdAt: -1 });
+    return res.status(200).json(tasks);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+const getTaskById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid ID format" });
+    }
+    const checkTaskId = await Task.findById(id);
+    // check  the team and project  in db
+    if (!checkTaskId) {
+      return res.status(400).json({ message: " Task not found!" });
+    }
+    const tasks = await Task.findById(id)
+      .populate({ path: "owners", select: "-password" })
+      .populate("team")
+      .populate("project")
+      .populate({
+        path: "team",
+        populate: { path: "members", select: "-password" },
+      })
       .sort({ createdAt: -1 });
     return res.status(200).json(tasks);
   } catch (error) {
@@ -105,4 +137,4 @@ const getTaskByProject = async (req, res) => {
   }
 };
 
-module.exports = { addTaskHandler, getTasks, getTaskByProject };
+module.exports = { addTaskHandler, getTasks, getTaskByProject, getTaskById };

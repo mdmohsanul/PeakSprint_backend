@@ -17,7 +17,10 @@ const addTeamHandler = async (req, res) => {
 
 const getTeamsHandler = async (req, res) => {
   try {
-    const teams = await Team.find().populate("members").select("-password");
+    const teams = await Team.find().populate({
+      path: "members",
+      select: "-password",
+    }); // Exclude password in populated member
     res.status(200).json(teams);
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
