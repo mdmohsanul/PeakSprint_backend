@@ -32,10 +32,17 @@ const addMember = async (req, res) => {
     const teamId = req.params.id;
     // It accepts an array of member ID
     const memberId = req.body;
+    const findTeam = await Team.findById(teamId);
 
+    const teamMemberIds = findTeam.members.map((id) => id.toString()); // Convert ObjectId to string
+
+    const exists = memberId.members.some((id) => teamMemberIds.includes(id));
+    if (exists) {
+      res.status(400).json({ message: "Member already present" });
+    }
     const newMember = await Team.findByIdAndUpdate(
       teamId,
-      { $addToSet: { members: { $each: memberId.member } } },
+      { $addToSet: { members: { $each: memberId.members } } },
       { new: true }
     );
     res.status(200).json(newMember);
