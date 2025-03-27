@@ -6,6 +6,7 @@ const authRoutes = require("./routes/auth");
 const taskRoutes = require("./routes/task");
 const teamRoutes = require("./routes/team");
 const projectRoutes = require("./routes/project");
+const reportRoutes = require("./routes/report");
 
 const app = express();
 dotenv.config();
@@ -29,6 +30,7 @@ app.use("/auth", authRoutes);
 app.use("/task", taskRoutes);
 app.use("/team", teamRoutes);
 app.use("/project", projectRoutes);
+app.use("/report", reportRoutes);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
