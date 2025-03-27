@@ -12,11 +12,8 @@ const getLastWeekReport = async (req, res) => {
       status: "Completed",
     })
       .populate({ path: "owners", select: "-password" })
+      .populate({ path: "team", select: "-members" })
       .populate("project")
-      .populate({
-        path: "team",
-        populate: { path: "members", select: "-password" },
-      })
       .sort({ createdAt: -1 });
     res.status(200).json(recentDocsWithCompleteStatus);
   } catch (error) {
