@@ -21,4 +21,17 @@ const getLastWeekReport = async (req, res) => {
   }
 };
 
-module.exports = { getLastWeekReport };
+const getClosedTasks = async (req, res) => {
+  try {
+    const closedTask = await Task.find({ status: "Completed" })
+      .populate({ path: "owners", select: "-password" })
+      .populate({ path: "team", select: "-members" })
+      .populate("project")
+      .sort({ createdAt: -1 });
+    res.status(200).json(closedTask);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching closed task report data" });
+  }
+};
+
+module.exports = { getLastWeekReport, getClosedTasks };
