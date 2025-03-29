@@ -34,4 +34,14 @@ const getClosedTasks = async (req, res) => {
   }
 };
 
-module.exports = { getLastWeekReport, getClosedTasks };
+const getPendingTasks = async (req, res) => {
+  try {
+    const notCompletedTasks = await Task.find({ status: { $ne: "Completed" } });
+
+    res.status(200).json(notCompletedTasks);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching 'Not completed Task'" });
+  }
+};
+
+module.exports = { getLastWeekReport, getClosedTasks, getPendingTasks };
