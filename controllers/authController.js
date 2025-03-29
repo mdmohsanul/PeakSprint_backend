@@ -45,9 +45,7 @@ const loginHandler = async (req, res) => {
     }
     const passwordMatch = await bcrypt.compare(password, loginUser.password);
     if (!passwordMatch) {
-      return res
-        .status(401)
-        .json({ message: "Password/emailId is incorrect!" });
+      return res.status(401).json({ message: "Password is incorrect!" });
     }
     //generate JWT Token
     const token = jwt.sign({ loginUser }, process.env.JWT_SECRET, {
